@@ -1,0 +1,33 @@
+# La única diferencia es la ruta del archivo: .github/workflows/php.yml
+
+name: Pipeline de Pruebas PHP (con Node.js)
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: node:18-bullseye
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Instalar PHP y Composer
+        run: |
+          apt-get update
+          apt-get install -y php php-cli php-mbstring php-xml php-zip unzip
+          curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+      - name: Cache de dependencias de Composer
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+
+      - name: Instalar dependencias con Composer
+        run: composer install --prefer-dist --no-progress
+
+      - name: Ejecutar pruebas con PHPUnit
+        run: composer test
