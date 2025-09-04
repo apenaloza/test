@@ -1,4 +1,4 @@
-name: Pipeline de Pruebas PHP
+name: Pipeline de Pruebas PHP (con Node.js)
 
 on: [push, pull_request]
 
@@ -6,11 +6,18 @@ jobs:
   test:
     runs-on: ubuntu-latest
     container:
-      image: php:8.2-cli
+      image: node:18-bullseye
 
     steps:
       - name: Checkout del código
         uses: actions/checkout@v4
+
+      - name: Instalar PHP y Composer
+        run: |
+          apt-get update
+          apt-get install -y php php-cli php-mbstring php-xml php-zip unzip
+          # Descargar e instalar Composer
+          curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
       - name: Cache de dependencias de Composer
         uses: actions/cache@v4
