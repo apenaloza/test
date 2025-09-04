@@ -1,0 +1,25 @@
+name: Pipeline de Pruebas PHP
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: php:8.2-cli
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Cache de dependencias de Composer
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+
+      - name: Instalar dependencias con Composer
+        run: composer install --prefer-dist --no-progress
+
+      - name: Ejecutar pruebas con PHPUnit
+        run: composer test
