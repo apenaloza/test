@@ -1,6 +1,4 @@
-# La única diferencia es la ruta del archivo: .github/workflows/php.yml
-
-name: Pipeline de Pruebas PHP (con Node.js)
+name: Pipeline de Pruebas PHP (GitHub)
 
 on: [push, pull_request]
 
@@ -13,6 +11,11 @@ jobs:
     steps:
       - name: Checkout del código
         uses: actions/checkout@v4
+
+      # --- PASO AÑADIDO ---
+      # Esto resuelve el error "dubious ownership" que ocurre en GitHub Actions
+      - name: Marcar directorio como seguro
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
       - name: Instalar PHP y Composer
         run: |
